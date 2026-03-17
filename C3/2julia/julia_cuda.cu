@@ -103,7 +103,7 @@ int main(void) {
     FILE *fp = fopen("output_cuda.txt", "w");
     if (fp != NULL) {
         for (int i = 0; i < N * N; ++i) {
-            //fprintf(fp, "%d\n", h_A[i]);
+            fprintf(fp, "%d\n", h_A[i]);
         }
         fclose(fp);
     }
