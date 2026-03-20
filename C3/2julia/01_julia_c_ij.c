@@ -21,12 +21,12 @@ int main(void)
     {
         for (int i = 0; i < N; ++i)
         {
-            int id = j * N + i;
+            int ind = j * N + i;
 
             Real re = x0 + i * dx;
             Real im = y0 + j * dy;
 
-            A[id] = julia(re, im);
+            A[ind] = julia(re, im);
         }
     }
 
@@ -35,7 +35,9 @@ int main(void)
     #ifdef WRITE_TO_FILE
     write_array_to_file("output_ser.txt", A, N * N);
 #else
-    printf("sum = %lld\n", sum_array(A, N * N));
+    TIC(sum);
+    printf("Sum = %lld\n", sum_array(A, N * N));
+    TOC(sum,"Sum time");
 #endif
 
 

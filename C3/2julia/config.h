@@ -1,8 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define N 2401
-#define MAX_IT 1000
+#define N 24001
+#define MAX_IT 10000
 
 #define r2  4.0
 

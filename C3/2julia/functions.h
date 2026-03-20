@@ -1,7 +1,7 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-int julia(Real re, Real im)
+static inline int julia(Real re, Real im)
 {
     int ret = MAX_IT+1;
 
