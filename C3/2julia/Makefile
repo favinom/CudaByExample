@@ -1,5 +1,5 @@
 uno: julia_c.c julia_neon.c
-	gcc   julia_c.c         -O3 -march=native                   -o julia_c
+	gcc   01_julia_c.c      -O3 -march=native                   -o julia_c
 	clang julia_neon.c      -O3 -march=armv8-a+simd -ffast-math -o julia_neon
 	gcc   julia_omp.c       -O3 -fopenmp                        -o julia_omp
 	gcc   julia_omp_chunk.c -O3 -fopenmp                        -o julia_omp_chunk
