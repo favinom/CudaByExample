@@ -18,7 +18,7 @@ int main(void)
 
     TIC(loop);
 
-    //#pragma omp parallel for schedule(static, 256)
+    //#pragma omp parallel for schedule(static, 1)
     #pragma omp parallel for schedule(static)
     for (int ind = 0; ind < N*N; ++ind)
     {

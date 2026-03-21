@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include "config.h"
 #include "functions.h"
 
@@ -17,6 +21,7 @@ int main(void)
 
     TIC(loop);
 
+    OMP_FOR
     for (int j = 0; j < N; ++j)
     {
         for (int i = 0; i < N; ++i)

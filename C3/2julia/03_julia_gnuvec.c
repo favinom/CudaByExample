@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <stdint.h>
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 #include "config.h"
+#include "functions.h"
 
 typedef float  v4f __attribute__((vector_size(4 * sizeof(float))));
 typedef int    v4i __attribute__((vector_size(4 * sizeof(int))));
@@ -26,31 +30,27 @@ int main(void)
     const v4f v_c_im = { c_im, c_im, c_im, c_im };
     const v4f v_r2   = { r2,   r2,   r2,   r2   };
 
+    const v4f dxv = {dx, dx, dx, dx};
+    const v4f dyv = {dy, dy, dy, dy};
+    const v4f x0v = {x0, x0, x0, x0};
+    const v4f y0v = {y0, y0, y0, y0};
+
     const v4i v_init = { MAX_IT + 1, MAX_IT + 1, MAX_IT + 1, MAX_IT + 1 };
 
-    struct timespec t0, t1;
-    clock_gettime(CLOCK_MONOTONIC, &t0);
+    TIC(loop);
 
+    OMP_FOR
     for (int id = 0; id < NN_pad; id += 4)
     {
-        int i0 = (id + 0) % N;  int j0 = (id + 0) / N;
-        int i1 = (id + 1) % N;  int j1 = (id + 1) / N;
-        int i2 = (id + 2) % N;  int j2 = (id + 2) / N;
-        int i3 = (id + 3) % N;  int j3 = (id + 3) / N;
+        v4i idv={id + 0,id + 1,id + 2,id + 3};
+        v4i iv=idv%N;
+        v4i jv=idv/N;
 
-        v4f v_re = {
-            x0 + i0 * dx,
-            x0 + i1 * dx,
-            x0 + i2 * dx,
-            x0 + i3 * dx
-        };
+        v4f tempx=__builtin_convertvector(iv, v4f);
+        v4f tempy=__builtin_convertvector(jv, v4f);
 
-        v4f v_im = {
-            y0 + j0 * dy,
-            y0 + j1 * dy,
-            y0 + j2 * dy,
-            y0 + j3 * dy
-        };
+        v4f v_re=dxv*tempx+x0v;
+        v4f v_im=dyv*tempy+y0v;
 
         v4i v_A = v_init;
 
@@ -91,25 +91,17 @@ int main(void)
         A[id + 3] = v_A[3];
     }
 
-    clock_gettime(CLOCK_MONOTONIC, &t1);
+    TOC(loop,"Loop time");
 
-    double elapsed =
-        (double)(t1.tv_sec - t0.tv_sec) +
-        1e-9 * (double)(t1.tv_nsec - t0.tv_nsec);
 
-    printf("Loop time: %.6f s\n", elapsed);
+#ifdef WRITE_TO_FILE
+    write_array_to_file("output_ser.txt", A, N * N);
+#else
+    TIC(sum);
+    printf("Sum = %lld\n", sum_array(A, N * N));
+    TOC(sum,"Sum time");
+#endif
 
-    FILE *fp = fopen("output_gnuvec.txt", "w");
-    if (fp == NULL) {
-        perror("fopen");
-        free(A);
-        return 1;
-    }
-
-    for (int i = 0; i < N * N; ++i)
-        fprintf(fp, "%d\n", A[i]);
-
-    fclose(fp);
     free(A);
     return 0;
 }

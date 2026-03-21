@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include "config.h"
 #include "functions.h"
 
@@ -17,22 +21,7 @@ int main(void)
 
     TIC(loop);
 
-    //int i = 0, j = 0;
-    //for (int ind = 0; ind < N * N; ++ind)
-    //{
-    //    Real re = x0 + (Real)i * dx;
-    //    Real im = y0 + (Real)j * dy;
-    //
-    //    A[ind] = julia(re, im);
-
-    //   ++i;
-    //    if (i == N)
-    //    {
-    //        i = 0;
-    //        ++j;
-    //    }
-    //}
-
+    OMP_FOR
     for (int ind = 0; ind < N*N; ++ind)
     {
         int i=ind%N;

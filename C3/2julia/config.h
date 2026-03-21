@@ -30,6 +30,17 @@ typedef double Real;
            1e-9 * (double)(name##_t1.tv_nsec - name##_t0.tv_nsec))
 
 
+#ifdef _OPENMP
+    #if OMP_SCHED_CHUNK
+        #define OMP_FOR _Pragma("omp parallel for schedule(static)")
+    #else
+        #define OMP_FOR _Pragma("omp parallel for schedule(static,1)")
+    #endif
+#else
+  #define OMP_FOR
+#endif
+
+
 #endif
 
 //clock_t t0 = clock();
